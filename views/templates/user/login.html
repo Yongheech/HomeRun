@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<main>
+
+
+    <h2>로그인</h2>
+    <div>
+
+        <form id="login" name="loginfrm" method="post">
+            <div><label for="userid">아이디</label>
+                <input type="text" name="userid" id="userid" required> </div>
+            <div><label for="passwd">비밀번호</label>
+                <input type="text" name="passwd" id="passwd" required> </div>
+        <div></div>
+            <div class="login_btn">
+               <button class="login_btn" onclick="login()">로그인</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="blank">
+        <iframe id="contentFrame" src=""></iframe>
+    </div>
+
+</main>
+</html>
