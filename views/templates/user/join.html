@@ -5,215 +5,357 @@
     <title>회원가입</title>
     <link rel="stylesheet" href="/static/css/bs5/bootstrap.min.css">
     <link rel="stylesheet" href="/static/css/project.css">
+    <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit"
+            async defer></script>
+    <script type="text/javascript">
+        var onloadCallback = () => {
+            grecaptcha.render('captcha', { 'sitekey' : '6LeKoCsqAAAAAHBUAE7T3VyLPC9sYrosoYDgJRRD' });
+        };
+    </script>
 
+    <style>
+
+       body{
+           font-family: Arial, sans-serif;
+           background-color: #f0f0f0 ;
+
+
+       }
+
+      .login-box {
+          background-color: rgba(255,255,255,0.9);
+          padding: 30px;
+          display: flex;
+          border-radius: 10px;
+          box-shadow: 0 0 20px rgba(0,0,0, 0.1);
+
+          height: 400px;
+          text-align: center;
+      }
+
+    </style>
 
 
 </head>
 <body>
-    <main class="container  bg-gradient">
-       <h1 class="text-center text-white"></h1>
-        <h2 class="text-center my-5">회원가입</h2>
-        <h3 class="text-center my-5" >홈런과 함께해 주셔서 감사합니다!!</h3>
 
-        <div class="row justify-content-center">
-            <div class="col-12 col-md-6">
-                <form name="joinfrm" method="post">
-                    <!-- 사용자 유형 -->
-                    <div class="mb-3 d-flex justify-content-center">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="nomeluser" id="nomeluser">
-                            <label class="form-check-label" for="nomeluser">일반 사용자</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="business" id="business">
-                            <label class="form-check-label" for="business">사업자 사용자</label>
-                        </div>
+
+<div class="login-box">
+<main class="container bg-gradient">
+    <h1 class="text-center text-white"></h1>
+    <h2 class="text-center my-5">회원가입</h2>
+    <h3 class="text-center my-5">홈런과 함께해 주셔서 감사합니다!!</h3>
+
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6">
+            <form name="joinfrm" method="post">
+                <!-- 사용자 유형 -->
+                <div class="mb-3 d-flex justify-content-center">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="usertype" id="nomeluser" checked>
+                        <label class="form-check-label" for="nomeluser">일반 사용자</label>
                     </div>
-
-                    <!-- 이름 -->
-                    <div class="mb-3 row">
-                        <label for="name" class="col-sm-4 col-form-label text-end">이름</label>
-                        <div class="col-sm-8">
-                            <input type="text" name="name" id="name" required class="form-control">
-                        </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="usertype" id="business">
+                        <label class="form-check-label" for="business">사업자 사용자</label>
                     </div>
+                </div>
 
-                    <!-- 생년월일 -->
-                    <div class="mb-3 row">
-                        <div class="col-sm-4 text-end">생년월일</div>
-                        <div class="col-sm-8">
-                            <div class="row g-2">
-                                <div class="col-4">
-                                    <select class="form-select" id="birth-year" required>
-                                        <option disabled selected>출생 연도</option>
-                                        <!-- 연도 옵션 추가 -->
-                                    </select>
-                                </div>
-                                <div class="col-4">
-                                    <select class="form-select" id="birth-month" required>
-                                        <option disabled selected>월</option>
-                                        <!-- 월 옵션 추가 -->
-                                    </select>
-                                </div>
-                                <div class="col-4">
-                                    <select class="form-select" id="birth-day" required>
-                                        <option disabled selected>일</option>
-                                        <!-- 일 옵션 추가 -->
-                                    </select>
-                                </div>
+                <!-- 이름 -->
+                <div class="mb-3 row">
+                    <label for="name" class="col-sm-4 col-form-label text-end">이름</label>
+                    <div class="col-sm-8">
+                        <input type="text"  placeholder="이름을 입력하세요"  name="name" id="name" required class="form-control">
+                    </div>
+                </div>
+
+                <!-- 생년월일 -->
+                <div class="mb-3 row">
+                    <div class="col-sm-4 text-end">생년월일</div>
+                    <div class="col-sm-8">
+                        <div class="row g-2">
+                            <div class="col-4" >
+
+                                <select class="form-select" id="birth-year" required>
+                                    <option disabled selected>출생 연도</option>
+
+                                    <!-- 연도 옵션 추가 -->
+                                </select>
+                            </div>
+                            <div class="col-4">
+                                <select class="form-select" id="birth-month" required>
+                                    <option disabled selected>월</option>
+                                    <!-- 월 옵션 추가 -->
+                                </select>
+                            </div>
+                            <div class="col-4">
+                                <select class="form-select" id="birth-day" required>
+                                    <option disabled selected>일</option>
+                                    <!-- 일 옵션 추가 -->
+                                </select>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- 아이디 -->
-                    <div class="mb-3 row">
-                        <label for="userid" class="col-sm-4 col-form-label text-end">아이디</label>
-                        <div class="col-sm-8">
-                            <input type="text" name="userid" id="userid" minlength="6" maxlength="18" required class="form-control">
-                        </div>
+                <!-- 아이디 -->
+                <div class="mb-3 row">
+                    <label for="userid" class="col-sm-4 col-form-label text-end">아이디</label>
+                    <div class="col-sm-5">
+                        <input type="text" placeholder="아이디입력 (6자~16자)" name="userid" id="userid" minlength="6" maxlength="18" required class="form-control">
                     </div>
 
-                    <!-- 비밀번호 -->
-                    <div class="mb-3 row">
-                        <label for="passwd" class="col-sm-4 col-form-label text-end">비밀번호</label>
-                        <div class="col-sm-8">
-                            <input type="password" name="passwd" id="passwd" minlength="6" maxlength="18" required class="form-control">
-                        </div>
+                    <div class="col-sm-3 d-flex justify-content-start align-items-center">
+                        <button type="button" name="reuserid" id="reuserid" class="btn btn-primary">중복확인</button>
                     </div>
+                </div>
 
-                    <!-- 비밀번호 확인 -->
-                    <div class="mb-3 row">
-                        <label for="repasswd" class="col-sm-4 col-form-label text-end">비밀번호 확인</label>
-                        <div class="col-sm-8">
-                            <input type="password" name="repasswd" id="repasswd" minlength="6" maxlength="18" required class="form-control">
-                        </div>
+                <!-- 비밀번호 -->
+                <div class="mb-3 row">
+                    <label for="passwd" class="col-sm-4 col-form-label text-end">비밀번호</label>
+                    <div class="col-sm-8">
+                        <input type="password" placeholder="비밀번호입력 (문자, 숫자,특수문자 포함6자~16자)" name="passwd" id="passwd" minlength="6" maxlength="18" required class="form-control">
                     </div>
+                </div>
 
-                    <!-- 이메일 -->
-                    <div class="mb-3 row">
-                        <label for="email" class="col-sm-4 col-form-label text-end">이메일</label>
-                        <div class="col-sm-8">
-                            <input type="email" name="email" id="email" required class="form-control">
-                        </div>
+                <!-- 비밀번호 확인 -->
+                <div class="mb-3 row">
+                    <label for="repasswd" class="col-sm-4 col-form-label text-end">비밀번호 확인</label>
+                    <div class="col-sm-8">
+                        <input type="password" placeholder="비밀번호를 확인하세요" name="repasswd" id="repasswd" minlength="6" maxlength="18" required class="form-control">
                     </div>
+                </div>
 
-                    <!-- 사업자 등록번호 -->
-                    <div class="mb-3 row">
-                        <label for="businsesno" class="col-sm-4 col-form-label text-end">사업자 등록번호</label>
-                        <div class="col-sm-8">
-                            <input type="text" name="businsesno" id="businsesno" required class="form-control">
-                        </div>
+                <!-- 이메일 -->
+                <div class="mb-3 row">
+                    <label for="email" class="col-sm-4 col-form-label text-end">이메일</label>
+                    <div class="col-sm-8">
+                        <input type="email" placeholder="이메일을 입력하세요" name="email" id="email" required class="form-control">
                     </div>
+                </div>
 
-                    <!-- 자동가입방지 -->
-                    <div class="mb-3 row">
-                        <label for="captcha" class="col-sm-4 col-form-label text-end">자동가입방지</label>
-                        <div class="col-sm-8">
-                            <div id="captcha" class="form-control"></div>
-                        </div>
+                <!-- 사업자 등록번호 -->
+                <div class="mb-3 row" id="businessNumberRow" style="display: none;">
+                    <label for="businsesno" class="col-sm-4 col-form-label text-end">사업자 등록번호</label>
+                    <div class="col-sm-8">
+                        <input type="text" placeholder="사업자 등록번호를 입력하세요" name="businsesno" id="businsesno" class="form-control">
                     </div>
+                </div>
 
-
-                    <div class="signupBoxTool__signupBox__terms__title">
-                        <h3>개인정보 수집 및 이용</h3>
+                <!-- 자동가입방지 -->
+                <div class="mb-3 row">
+                    <label for="captcha" class="col-sm-4 col-form-label text-end">자동가입방지</label>
+                    <div class="col-sm-8">
+                        <div id="captcha" class="form-control"></div>
                     </div>
-                    <div class="signupBoxTool d-flex justify-content-center align-items-center  ">
-                        <dl>
-                            <dt>
-                                시행일자: 2024년 08월 23일
-                            </dt>
-                            <br>
-                            <dd>
-                                HomeRun(이하 "회사" 또는 "HomeRun"이라고 함)은 통신비밀보호법, 전기통신사업법, 정보통신망 이용촉진 및 정보보호 등에 관한
-                                법률 등 정보통신서비스제공자가 준수하여야 할 관련
-                                법령상의 개인정보보호 규정을 준수하며, 관련 법령에 의거한 개인정보취급방침을 정하여 이용자 권익 보호에 최선을 다하고
-                                있습니다.<br /><br />
+                </div>
 
-                                본 개인정보취급방침은 다음과 같은 내용을 담고 있습니다.<br /><br />
-                                <input type="checkbox">
-                            </dd>
-
-                    <!-- 버튼들 -->
-                    <div class="mb-3 row justify-content-center">
-                        <div class="col-sm-6 d-flex justify-content-around">
-                            <button type="button" id="joinbtn" class="btn btn-success">회원가입</button>
-                            <button type="reset" id="rstbtn" class="btn btn-danger">다시입력</button>
-                        </div>
+                <!-- 버튼들 -->
+                <div class="mb-3 row justify-content-center">
+                    <div class="col-sm-6 d-flex justify-content-around">
+                        <button type="button" id="joinbtn" class="btn btn-success">회원가입</button>
+                        <button type="reset" id="rstbtn" class="btn btn-danger">다시입력</button>
                     </div>
+                </div>
 
-                    <br class="text-center">
-                    <!-- 카카오 로그인 버튼 -->
-                    <div class="mb-3 row justify-content-center">
-                        <div class="col-8 text-center">
-                            <button type="button" class="btn btn-light">
-                                <img src="/static/img/kakao_login_medium_narrow.png" alt="카카오 로그인" class="img-fluid">
-                            </button>
-                        </div>
+                <!-- 카카오 로그인 버튼 -->
+                <div class="mb-3 row justify-content-center">
+                    <div class="col-8 text-center">
+                        <button type="button" class="btn btn-light">
+                            <img src="/static/img/kakao_login_medium_narrow.png" alt="카카오 로그인" class="img-fluid">
+                        </button>
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
-    </main>
+    </div>
+</div>
 
+</main>
 
 <script>
+    // 폼 요소 선택
+    const businessRadio = document.getElementById('business');
+    const nomelUserRadio = document.getElementById('nomeluser');
+    const businessNumberRow = document.getElementById('businessNumberRow');
+    const joinbtn = document.querySelector('#joinbtn');
+    const joinfrm = document.joinfrm;
 
-    let joinbtn = document.querySelector('#joinbtn')
-    let joinfrm = document.joinfrm;
+    // 사용자 유형에 따른 폼 표시/숨기기
+    const toggleBusinessNumber = () => {
+        if (businessRadio.checked) {
+            businessNumberRow.style.display = 'flex'; // 사업자 사용자 선택 시 사업자 등록번호 필드 표시
+            joinfrm.businsesno.required = true; // 필수 항목으로 설정
+        } else {
+            businessNumberRow.style.display = 'none'; // 일반 사용자 선택 시 사업자 등록번호 필드 숨김
+            joinfrm.businsesno.required = false; // 필수 항목 해제
+        }
+    };
 
+    // 이벤트 리스너 설정
+    businessRadio.addEventListener('change', toggleBusinessNumber);
+    nomelUserRadio.addEventListener('change', toggleBusinessNumber);
 
-    let checkjoinfrm = (frm) => {
-        if (frm.name.value === ''){
+    // 회원가입 버튼 클릭 이벤트
+    joinbtn.addEventListener('click', () => {
+        if (!checkjoinfrm(joinfrm)) return;
+
+        const formData = new FormData(joinfrm);
+        console.log(formData);
+    });
+
+    // 폼 검증 함수
+    const checkjoinfrm = (frm) => {
+        if (frm.name.value === '') {
             alert('이름을 입력하세요');
             frm.name.focus();
             return false;
-        }
-
-       else if (frm.password.value === ''){
-            alert('비밀번호를 입력하세요');
-            frm.password.focus();
+        } else if (frm.userid.value === '') {
+            alert('아이디를 입력하세요');
+            frm.userid.focus();
             return false;
-        }
-
-       else  if (frm.repasswd.value !== frm.password.value ){
+        } else if (frm.passwd.value === '') {
+            alert('비밀번호를 입력하세요');
+            frm.passwd.focus();
+            return false;
+        } else if (frm.repasswd.value !== frm.passwd.value) {
             alert('입력한 비밀번호가 같은지 확인하세요');
             frm.repasswd.focus();
             return false;
-        }
-        else if (frm.name.value === ''){
-            alert('이름이 같은지 확인하세요');
-            frm.name.focus();
-            return false;
-        }
-
-        else if (frm.email.value === ''){
+        } else if (frm.email.value === '') {
             alert('이메일을 입력하세요');
             frm.email.focus();
             return false;
-        }
-
-        else if (frm.businsesno.value === ''){
+        } else if (businessRadio.checked && frm.businsesno.value === '') {
             alert('사업자 등록 번호를 입력하세요');
             frm.businsesno.focus();
             return false;
-        }
+        } else if (grecaptcha.getResponse( ) === '') {
+        alert('자동가입 방지를 클릭하세요!');
+        return false;
+     }  else {
+        //console.log(grecaptcha.getResponse( ));
+        return true;
+    }
 
+
+        return true; // 모든 검증을 통과하면 true 반환
     };
 
-joinbtn.addEventListener('click', () => {
-    if (!checkjoinfrm(joinfrm)) return;
 
-    const formData = new FormData(joinfrm);
-    console.log(formData);
-})
-
-joinbtn.addEventListener('click'), () =>{
-    if (!checkjoinfrm(joinfrm)) return;
+    let useridValid = false;
+    let passwdValid = false;
+    let msg = document.querySelector('#msg')
 
 
-}
+    document.querySelector('#userid').addEventListener("input", function () {
+
+        let inputuserid = this.value;
+        useridValid = inputuserid.length >= 6 && inputuserid.length <= 16;
+        if (useridValid) {
+            this.classList.remove("is-invalid");
+            this.classList.add("is-valid");
+            msg.textContent = '';
+        } else {
+            this.classList.remove("is-valid");
+            this.classList.add("is-invalid");
+            result = '아이디 형식이 올바르지 않습니다'
+            msg.textContent = result;
+        }
+    });
+
+    document.querySelector('#passwd').addEventListener("input", function () {
+        let inputpasswd = this.value;
+        passwdValid = inputpasswd.length >= 6 && inputpasswd.length <= 16;
+        if (passwdValid) {
+            this.classList.remove("is-invalid");
+            this.classList.add("is-valid");
+            msg.textContent = '';
+        } else {
+            this.classList.remove("is-valid");
+            this.classList.add("is-invalid");
+            result = '비밀번호 형식이 올바르지 않습니다'
+            msg.textContent = result;
+        }
+    });
 
 
+
+    document.querySelector('#email').addEventListener("input", function () {
+        let inputEmail = this.value;
+        // 이메일 형식 정규식
+        let emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        let emailValid = emailPattern.test(inputEmail);
+
+        if (emailValid) {
+            this.classList.remove("is-invalid");
+            this.classList.add("is-valid");
+            msg.textContent = '';  // 올바르게 입력되었을 때는 메시지를 지웁니다.
+        } else {
+            this.classList.remove("is-valid");
+            this.classList.add("is-invalid");
+            msg.textContent = '이메일 형식이 올바르지 않습니다';  // 잘못된 입력 시 메시지를 표시합니다.
+        }
+    });
+
+    document.querySelector('#businsesno').addEventListener("input", function () {
+        let inputbusinsesno = this.value;
+        // 이메일 형식 정규식
+        let businsesnoPattern = /^[0-9]{3}-[0-9]{2}-[0-9]{5}$/;
+        let businsesnoValid = businsesnoPattern.test(inputbusinsesno);
+
+        if (businsesnoValid) {
+            this.classList.remove("is-invalid");213
+            this.classList.add("is-valid");
+            msg.textContent = '';  // 올바르게 입력되었을 때는 메시지를 지웁니다.
+        } else {
+            this.classList.remove("is-valid");
+            this.classList.add("is-invalid");
+            msg.textContent = '사업자 번호가 올바르지 않습니다';  // 잘못된 입력 시 메시지를 표시합니다.
+        }
+    });
+
+
+
+    // 초기 상태 설정
+    toggleBusinessNumber(); // 페이지 로드 시 현재 선택된 사용자 유형에 따라 필드를 표시/숨김
+</script>
+
+<script>
+    joinbtn.addEventListener('click', ( ) => {
+        // 회원정보 입력 여부 검사
+        if (!checkjoinfrm(joinfrm)) return;
+
+        // 폼에 입력된 회원 정보를 초기화함
+        const formData = new FormData(joinfrm);
+        console.log(formData);
+
+        // 서버로 보내기 위해 폼데이터를 JSON객체로 변환
+        let jsondata = {};
+        formData.forEach((val, key) => {
+            jsondata[key] = val;
+        });
+        // 캡챠 응답코드 추가
+        jsondata['captcha'] = grecaptcha.getResponse();
+        console.log(jsondata);
+
+        // ajax를 이용해서 서버로 json 데이터 전송하고, 결과 받음
+        fetch('/user/join', {
+            method: 'POST', // 데이터 전송방식
+            headers: {      // 전송할 데이터 종류
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(jsondata), // 전송할 데이터
+            // 문자열을 json으로 변환
+            redirect: 'follow'           // 서버 응답시 처리방식 지정
+        }).then((res) => {
+            if (res.redirected) location.href = res.url;
+            // 서버에서 응답해 준 url로 이동
+        }); //fetch
+    });//addEventListener
 </script>
 </body>
+
+
 </html>
