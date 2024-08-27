@@ -24,16 +24,16 @@ class UserService:
 
 @staticmethod
 def check_captcha(user):
+        req_url = 'https://www.google.com/recaptcha/api/siteverify'
+        params = {
+                  'secret': '6LeKoCsqAAAAAOGQbslqQCwHU6shGBsPfmajiVh5',
+                  'response': user.captcha
+        }
 
-    req_url = 'https://www.google.com/recaptcha/api/siteverify'
-    params = {'secret': '6LeKoCsqAAAAAOGQbslqQCwHU6shGBsPfmajiVh5',
-              'response': user.captcha }
+        res = requests.get(req_url, params=params)
+        result = res.json()
+        print('check => ', result)
 
-    res = requests.get(req_url, params=params)
-    result = res.json()
-    print('check => ', result)
-
-    return result['success']
-
+        return result['success']
 
 

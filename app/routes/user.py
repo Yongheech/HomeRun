@@ -42,12 +42,16 @@ async def joinok(user: NewUser, db:Session = Depends(get_db)):
 
 
 
-
-
 @user_router.get('/login', response_class=HTMLResponse)
 async def login(req: Request):
     return templates.TemplateResponse('/user/login.html', {'request': req})
 
+
 @user_router.get('/form', response_class=HTMLResponse)
 async def form(req: Request):
     return templates.TemplateResponse('/user/form.html', {'request': req})
+
+
+@user_router.get('/finds', response_class=HTMLResponse)
+async def finds(req: Request):
+    return templates.TemplateResponse('/user/finds.html', {'request': req})
