@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.model import user
+from app.model import user, businessuser
 from settings import config
 
 engine = create_engine(config.dbconn, echo=True)
@@ -19,6 +19,7 @@ def get_db():
 
 async def db_startup():
     user.Base.metadata.create_all(engine)
+    businessuser.Base.metadata.create_all(engine)
 
 async def db_shutdown():
     pass
