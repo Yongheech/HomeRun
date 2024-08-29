@@ -68,28 +68,10 @@
 
                     <!-- 생년월일 -->
                     <div class="mb-3 row">
-                        <div class="col-sm-4 text-end">생년월일</div>
+                        <label for="birth" class="col-sm-4 col-form-label text-end">생년월일</label>
                         <div class="col-sm-8">
-                            <div class="row g-2">
-                                <div class="col-4">
-                                    <select class="form-select" id="birth-year" required>
-                                        <option disabled selected>출생 연도</option>
-                                        <!-- 연도 옵션 추가 -->
-                                    </select>
-                                </div>
-                                <div class="col-4">
-                                    <select class="form-select" id="birth-month" required>
-                                        <option disabled selected>월</option>
-                                        <!-- 월 옵션 추가 -->
-                                    </select>
-                                </div>
-                                <div class="col-4">
-                                    <select class="form-select" id="birth-day" required>
-                                        <option disabled selected>일</option>
-                                        <!-- 일 옵션 추가 -->
-                                    </select>
-                                </div>
-                            </div>
+                            <input type="date" name="birth" id="birth" required class="form-control">
+                            <div id="birthError" class="error-message"></div>
                         </div>
                     </div>
 
@@ -99,7 +81,7 @@
                         <div class="col-sm-8">
                             <div class="input-group">
                                 <input type="text" placeholder="아이디입력 (6자~16자)" name="userid" id="userid" minlength="6" maxlength="18" required class="form-control">
-                                <button id="idckbtn" class="btn btn-primary" type="button" onclick="return idCheck()">중복체크</button>
+                                <button id="idckbtn" class="btn btn-primary" type="button" onclick=" return ">중복체크</button>
                             </div>
                             <div id="useridError" class="error-message"></div>
                         </div>
@@ -119,6 +101,15 @@
                         <div class="col-sm-8">
                             <input type="password" placeholder="비밀번호를 확인하세요" name="repasswd" id="repasswd" minlength="6" maxlength="18" required class="form-control">
                             <div id="repasswdError" class="error-message"></div>
+                        </div>
+                    </div>
+
+                    <!-- 핸드폰 번호 -->
+                    <div class="mb-3 row">
+                        <label for="phone" class="col-sm-4 col-form-label text-end">핸드폰 번호</label>
+                        <div class="col-sm-8">
+                            <input type="text" placeholder="핸드폰 번호를 입력하세요" name="phone" id="phone" required class="form-control">
+                            <div id="phoneError" class="error-message"></div>
                         </div>
                     </div>
 
@@ -294,6 +285,37 @@
         return true;
     };
 
+    document.querySelector('#idckbtn')
+        .addEventListener('click', async function() {
+            const userid = document.querySelector('#userid').value;
+
+            if (userid.length < 6){
+                alert('아이디는 6자 이상이여야 합니다.');
+                return;
+            }
+
+            // 서버로 아이디 중복 체크 요청
+            const response = await fetch('/user/check_userid', {
+                method:'POST',
+                headers: {
+                    'content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userid: userid  })
+            });
+
+            const result = await response.json();
+            const errorElement = document.getElementById('useridError');
+
+            if (result.exists) {
+                errorElement.textContent = result.message;
+                document.querySelector('#userid').classList.add('is-invalid');
+            } else {
+                errorElement.textContent = result.message;
+                document.querySelector('#userid').classList.remove('is-invalid');
+                document.querySelector('#userid').classList.add('is-valid');
+            }
+
+        });
 
 
     // 초기 상태 설정
@@ -361,6 +383,36 @@
             // 서버에서 응답해 준 url로 이동
         }); //fetch
     });//addEventListener
+
+    console.log('JSON Data:', jsondata);
+
+    joinbtn.addEventListener('click', () => {
+        if (!checkjoinfrm(joinfrm)) return;
+
+        const formData = new FormData(joinfrm);
+        let jsondata = {};
+        formData.forEach((val, key) => {
+            if (key === 'birth') {
+
+                jsondata[key] = new Date(val).toISOString().split('T')[0]; // YYYY-MM-DD 형식으로 변환
+            } else {
+                jsondata[key] = val;
+            }
+        });
+        jsondata['captcha'] = grecaptcha.getResponse();
+
+        fetch('/user/join', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(jsondata),
+            redirect: 'follow'
+        }).then((res) => {
+            if (res.redirected) location.href = res.url;
+        });
+    });
 
 </script>
 </body>

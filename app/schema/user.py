@@ -8,6 +8,8 @@ class NewUser(BaseModel):
     passwd: str
     name : str
     email : str
+    birth : date
+    phone : str
     captcha: str
 
 
@@ -16,4 +18,5 @@ class BusinessUser(BaseModel):
      business_pwd: str
      business_name: str
      business_no : str
+     business_birth : date
      captcha: str

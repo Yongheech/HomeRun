@@ -1,7 +1,6 @@
 import requests
 from sqlalchemy import insert, select, and_
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import Session
 
 from app.model.user import User
 
@@ -12,7 +11,8 @@ class UserService:
         try:
             stmt = insert(User).values(
                 userid=user.userid, passwd=user.passwd,
-                name=user.name, email=user.email)
+                name=user.name, email=user.email,
+                birth=user.birth, phone = user.phone)
             result = db.execute(stmt)
             db.flush()
             db.commit()
@@ -48,6 +48,22 @@ class UserService:
             return result
         except SQLAlchemyError as ex:
             print(f' ▶▶▶ login_member 오류 발생 : {str(ex)}')
+            db.rollback()
+            return None
+
+
+    @staticmethod
+    def check_userid_exists(db, userid):
+        try:
+            stmt= select(User).where(User.userid == userid)
+            result = db.execute(stmt).scalars().first()
+            return result is not None # 아이디가 존재하면 True, 아니면 False 반환
+
+
+        except SQLAlchemyError as ex:
+            print(f'▶▶▶ check_userid_exists 오류 발생 : {str(ex)}')
+            db.rollback()
+            return False
 
 
 

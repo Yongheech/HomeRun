@@ -10,5 +10,10 @@ class BusinessUser(Base):
     business_pwd: Mapped[str]
     business_name: Mapped[str]
     business_email: Mapped[str]
-    address: Mapped[str]
+    business_phone: Mapped[str]
+    business_birth: Mapped[str]
     business_uploadno: Mapped[int]
+
+
+class BusinessNuber(Base):
+    pass
