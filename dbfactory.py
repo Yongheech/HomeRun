@@ -21,5 +21,6 @@ async def db_startup():
     user.Base.metadata.create_all(engine)
     businessuser.Base.metadata.create_all(engine)
 
+
 async def db_shutdown():
     pass

@@ -1,8 +1,11 @@
 import requests
 from sqlalchemy import insert, select, and_
 from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import Session
 
+from app.model.businessuser import BusinessUser
 from app.model.user import User
+from app.schema.user import NewBusinessUser
 
 
 class UserService:
@@ -22,20 +25,33 @@ class UserService:
             print(f'▶▶▶ insert_member 오류발생: {str(ex)}')
             db.rollback()
 
+    @staticmethod
+    def insert_business_user(db: Session, business_user: NewBusinessUser):
+        new_business_user = BusinessUser(
+            business_id=business_user.business_id,
+            business_pwd=business_user.business_pwd,
+            business_name=business_user.business_name,
+            business_email=business_user.business_email,
+            business_phone=business_user.business_phone,
+            business_birth=business_user.business_birth,
+        )
+        db.add(new_business_user)
+        db.commit()
+        return db.query(BusinessUser).filter(BusinessUser.business_id == business_user.business_id).first()
 
     @staticmethod
     def check_captcha(user):
-            req_url = 'https://www.google.com/recaptcha/api/siteverify'
-            params = {
-                      'secret': '6LeKoCsqAAAAAOGQbslqQCwHU6shGBsPfmajiVh5',
-                      'response': user.captcha
-            }
+        req_url = 'https://www.google.com/recaptcha/api/siteverify'
+        params = {
+            'secret': '6LeKoCsqAAAAAOGQbslqQCwHU6shGBsPfmajiVh5',
+            'response': user.captcha
+        }
 
-            res = requests.get(req_url, params=params)
-            result = res.json()
-            print('check => ', result)
+        res = requests.get(req_url, params=params)
+        result = res.json()
+        print('check => ', result)
 
-            return result['success']
+        return result['success']
 
     @staticmethod
     def login_member(db, data):
@@ -64,7 +80,3 @@ class UserService:
             print(f'▶▶▶ check_userid_exists 오류 발생 : {str(ex)}')
             db.rollback()
             return False
-
-
-
-

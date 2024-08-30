@@ -12,11 +12,11 @@ class NewUser(BaseModel):
     phone : str
     captcha: str
 
-
-class BusinessUser(BaseModel):
-     business_id: str
-     business_pwd: str
-     business_name: str
-     business_no : str
-     business_birth : date
-     captcha: str
+class NewBusinessUser(BaseModel):
+    business_id: str
+    business_pwd: str
+    business_name: str
+    business_email: str
+    business_phone: str
+    business_birth: date
+    business_uploadno: int

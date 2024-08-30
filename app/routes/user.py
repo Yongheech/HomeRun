@@ -5,7 +5,7 @@ from starlette.responses import HTMLResponse, RedirectResponse, JSONResponse
 from starlette.templating import Jinja2Templates
 
 from dbfactory import get_db
-from app.schema.user import NewUser
+from app.schema.user import NewUser, NewBusinessUser
 from app.service.user import UserService
 
 user_router = APIRouter()
@@ -40,6 +40,28 @@ async def joinok(user: NewUser, db: Session = Depends(get_db)):
     except Exception as ex:
          print(f'▷▷▷ joinok 오류 발생 : {str(ex)}')
          return RedirectResponse(url='/user/error', status_code=303)
+
+
+@user_router.post('/business_join', response_class=HTMLResponse)
+async def business_joinok(business_user: NewBusinessUser, db: Session = Depends(get_db)):
+    try:
+        if UserService.check_captcha(business_user):
+            print(business_user)
+            result = UserService.insert_business_user(db, business_user)
+            print('처리결과:', result.rowcount)
+
+            if result.rowcount > 0:
+                return RedirectResponse(url='/user/login', status_code=303)
+
+        else:
+            return RedirectResponse(url='/user/error', status_code=303)
+
+    except Exception as ex:
+        print(f'▷▷▷ business_joinok 오류 발생 : {str(ex)}')
+        return RedirectResponse(url='/user/error', status_code=303)
+
+
+
 
 
 @user_router.post('/check_userid', response_class=JSONResponse)
@@ -98,3 +120,5 @@ async def error(req: Request):
 @user_router.get('/test',response_class=HTMLResponse)
 async def test(req: Request):
     return templates.TemplateResponse('/user/test.html', {'request':req})
+
+

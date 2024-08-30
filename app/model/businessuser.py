@@ -1,3 +1,6 @@
+from datetime import date
+
+from sqlalchemy import String
 from sqlalchemy.orm import mapped_column, Mapped
 from app.model.base import Base
 
@@ -11,9 +14,7 @@ class BusinessUser(Base):
     business_name: Mapped[str]
     business_email: Mapped[str]
     business_phone: Mapped[str]
-    business_birth: Mapped[str]
+    business_birth: Mapped[date] = mapped_column(String)
     business_uploadno: Mapped[int]
 
 
-class BusinessNuber(Base):
-    pass
