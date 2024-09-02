@@ -20,3 +20,4 @@ class NewBusinessUser(BaseModel):
     business_phone: str
     business_birth: date
     business_uploadno: int
+    captcha: str

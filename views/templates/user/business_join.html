@@ -80,7 +80,6 @@
     <form id="loginfrm" class="loginfrm">
         <div class="col-12 col-mb-6">
             <!-- 아이디 입력칸 -->
-            <form class="loginfrm">
                 <div class="mb-5 row">
                     <label for="userid" class="col-sm-4 col-form-label text-end">아이디</label>
                     <div class="col-sm-7">
@@ -173,29 +172,46 @@
     document.addEventListener('DOMContentLoaded', function() {
         let loginfrm = document.getElementById('loginfrm');
 
-        loginfrm.addEventListener('submit', (e) => {
-            e.preventDefault(); // 버튼의 submit 기능 중지
+        loginfrm.addEventListener('submit', async (e) => {
+            e.preventDefault(); // 기본 submit 동작 방지
 
             const formData = new FormData(loginfrm);
             let jsondata = {};
             formData.forEach((val, key) => {
                 jsondata[key] = val;
             });
-            console.log(jsondata);
+            console.log('Form Data:', jsondata);
 
-            fetch('/user/login', {
-                method:'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(jsondata),
-                redirect: 'follow'
-            }).then((res) => {
-                if (res.redirected) location.href = res.url;
-            });
+            try {
+                const response = await fetch('/user/login', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(jsondata),
+                    redirect: 'follow'
+                });
+
+                if (!response.ok) {
+                    // 응답이 실패한 경우
+                    const responseText = await response.text();
+                    console.error('Response error:', response.status, responseText);
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                if (response.redirected) {
+                    // 리다이렉션이 발생한 경우
+                    location.href = response.url;
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                alert('로그인에 실패했습니다. 다시 시도해주세요.');
+            }
         });
     });
+
+
 
 
 

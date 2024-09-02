@@ -4,6 +4,7 @@ from starlette.requests import Request
 from starlette.responses import HTMLResponse, RedirectResponse, JSONResponse
 from starlette.templating import Jinja2Templates
 
+from app.service.business_validation import validate_business_number
 from dbfactory import get_db
 from app.schema.user import NewUser, NewBusinessUser
 from app.service.user import UserService
@@ -27,40 +28,31 @@ async def joinok(user: NewUser, db: Session = Depends(get_db)):
 
     try:
         if UserService.check_captcha(user):
-            print(user)
             result = UserService.insert_user(db, user)
-            print('처리결과:', result.rowcount)
-
             if result.rowcount > 0:
                 return RedirectResponse(url='/user/login', status_code = 303)
 
         else:
-             return RedirectResponse(url='user/error', status_code=303)
+            return RedirectResponse(url='user/error', status_code=303)
 
     except Exception as ex:
-         print(f'▷▷▷ joinok 오류 발생 : {str(ex)}')
-         return RedirectResponse(url='/user/error', status_code=303)
+        print(f'▷▷▷ joinok 오류 발생 : {str(ex)}')
+        return RedirectResponse(url='/user/error', status_code=303)
+
 
 
 @user_router.post('/business_join', response_class=HTMLResponse)
 async def business_joinok(business_user: NewBusinessUser, db: Session = Depends(get_db)):
     try:
         if UserService.check_captcha(business_user):
-            print(business_user)
             result = UserService.insert_business_user(db, business_user)
-            print('처리결과:', result.rowcount)
-
             if result.rowcount > 0:
                 return RedirectResponse(url='/user/login', status_code=303)
-
         else:
             return RedirectResponse(url='/user/error', status_code=303)
-
     except Exception as ex:
         print(f'▷▷▷ business_joinok 오류 발생 : {str(ex)}')
         return RedirectResponse(url='/user/error', status_code=303)
-
-
 
 
 
@@ -78,7 +70,22 @@ async def check_userid(req: Request, db: Session = Depends(get_db)):
         print(f'▷▷▷ check_userid 오류 발생 : {str(ex)}')
         return JSONResponse(content={'exists': False, 'message': '오류가 발생했습니다.'})
 
+@user_router.post('/check_business_number', response_class=JSONResponse)
+async def check_business_number(req: Request, db: Session = Depends(get_db)):
+    data = await req.json()
+    business_number = data.get('businessNumber')
 
+    try:
+        is_valid = await validate_business_number(business_number)
+
+        if is_valid.get('valid', False):
+            return JSONResponse(content={'valid': True, 'message': '유효한 사업자 번호입니다.'})
+        else:
+            return JSONResponse(content={'valid': False, 'message': '유효하지 않은 사업자 번호입니다.'})
+
+    except Exception as ex:
+        print(f'▷▷▷ check_business_number 오류 발생 : {str(ex)}')
+        return JSONResponse(content={'valid': False, 'message': '오류가 발생했습니다.'})
 
 @user_router.get('/login', response_class=HTMLResponse)
 async def login(req: Request):
@@ -120,5 +127,4 @@ async def error(req: Request):
 @user_router.get('/test',response_class=HTMLResponse)
 async def test(req: Request):
     return templates.TemplateResponse('/user/test.html', {'request':req})
-
 

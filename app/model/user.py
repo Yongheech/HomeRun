@@ -1,5 +1,6 @@
 from datetime import datetime, date
-from sqlalchemy import String
+
+from sqlalchemy import Date
 from sqlalchemy.orm import mapped_column, Mapped
 from app.model.base import Base
 
@@ -13,7 +14,7 @@ class User(Base):
     name: Mapped[str]
     email: Mapped[str]
     phone: Mapped[str]
-    birth: Mapped[date] = mapped_column(String)
+    birth: Mapped[date] = mapped_column(Date)
     regisdate: Mapped[datetime] = mapped_column(default=datetime.now)
     modifydate: Mapped[datetime] = mapped_column(default=datetime.now, onupdate=datetime.now)
 
