@@ -1,20 +1,23 @@
-# app/services/business_validation.py
-
-import httpx
+import re
 from typing import Dict
 
-SERVICE_KEY = '	9GRdBCxTZtysQpCaJ40ER4FDMLutMxguPCAESTkBW9JTp%2FG3z4Rqd192CzdAFeVauOSyKsBVxXb9PGFBDy5xbw%3D%3D'
-API_URL = 'https://api.odcloud.kr/api/nts-businessman/v1/status'
+def validate_business_number(business_no: str) -> Dict:
+    """
+    Validate the business number format.
+    
+    Args:
+        business_no (str): The business number to validate.
+        
+    Returns:
+        Dict: A dictionary with validation result.
+    """
+    # 사업자 등록 번호 형식 검증 (10자리 숫자)
+    pattern = re.compile(r'^\d{3}-\d{2}-\d{5}$')
 
-async def validate_business_number(business_no: str) -> Dict:
-    async with httpx.AsyncClient() as client:
-        response = await client.post(
-            f"{API_URL}?serviceKey={SERVICE_KEY}",
-            json={"b_no": [business_no]},
-            headers={"Content-Type": "application/json", "Accept": "application/json"}
-        )
-
-
-        response.raise_for_status()
-        result = response.json()
-        return result
+    # 형식에 맞는지 확인
+    if pattern.match(business_no):
+        # 추가적인 검증 로직이 필요할 경우 여기에 추가
+        # 예를 들어, 특정 패턴의 유효성을 추가적으로 검증할 수 있습니다.
+        return {"valid": True}
+    else:
+        return {"valid": False}

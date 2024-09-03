@@ -1,3 +1,4 @@
+from datetime import datetime, date
 from datetime import date
 
 from sqlalchemy import Date
@@ -16,6 +17,9 @@ class BusinessUser(Base):
     business_email: Mapped[str]
     business_phone: Mapped[str]
     business_birth: Mapped[date] = mapped_column(Date)
-    business_uploadno:Mapped[int]
+    businessno: Mapped[str]
+    regisdate: Mapped[datetime] = mapped_column(default=datetime.now)
+    modifydate: Mapped[datetime] = mapped_column(default=datetime.now, onupdate=datetime.now)
+
 
 

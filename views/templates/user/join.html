@@ -137,6 +137,9 @@
                         </div>
                     </div>
 
+
+
+
                     <!-- 자동가입방지 -->
                     <div class="mb-3 row">
                         <label for="captcha" class="col-sm-4 col-form-label text-end">자동가입방지</label>
@@ -145,6 +148,7 @@
                             <div id="captchaError" class="error-message"></div>
                         </div>
                     </div>
+
 
                     <!-- 버튼들 -->
                     <div class="mb-3 row justify-content-center">
@@ -325,7 +329,7 @@
 
 
 
-    // 가입 버튼 클릭 이벤트
+    // 일반 사용자 가입 버튼 이벤트
     joinbtnUser.addEventListener('click', async () => {
         if (!checkjoinfrm(joinfrm)) return;
 
@@ -333,7 +337,7 @@
         let jsondata = {};
         formData.forEach((val, key) => {
             if (key === 'birth') {
-                jsondata[key] = new Date(val).toISOString().split('T')[0]; // YYYY-MM-DD 형식으로 변환
+                jsondata[key] = new Date(val).toISOString().split('T')[0];
             } else {
                 jsondata[key] = val;
             }
@@ -341,44 +345,44 @@
         jsondata['captcha'] = grecaptcha.getResponse();
         jsondata['usertype'] = 'nomeluser';
 
-        const response = await fetch('/user/join', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(jsondata),
-            redirect: 'follow'
-        });
+        try {
+            const response = await fetch('/user/join', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(jsondata)
+            });
 
-        if (response.redirected) {
-            location.href = response.url;
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            if (response.redirected) {
+                location.href = response.url;
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('회원가입 처리 중 오류가 발생했습니다.');
         }
     });
 
     // 비즈니스 가입 버튼 이벤트
     joinbtnBusiness.addEventListener('click', async () => {
-        if (!checkjoinfrm(joinfrm)) return;  // 폼 유효성 검사 실패 시 함수 종료
+        if (!checkjoinfrm(joinfrm)) return;
 
-        const formData = new FormData(joinfrm);  // 폼 데이터를 FormData 객체로 가져옴
-        let jsondata = {};  // 전송할 JSON 데이터를 담을 객체 생성
-
-        // FormData 객체의 각 필드를 순회하며 jsondata에 추가
+        const formData = new FormData(joinfrm);
+        let jsondata = {};
         formData.forEach((val, key) => {
-            console.log(`Key: ${key}, Value: ${val}`);  // 각 폼 데이터의 키와 값을 출력
             if (key === 'birth') {
-                jsondata[key] = new Date(val).toISOString().split('T')[0];  // 날짜 형식 변환
-            } else if (key === 'business_uploadno') {
-                jsondata[key] = parseInt(val, 10);  // 정수로 변환
+                jsondata[key] = new Date(val).toISOString().split('T')[0];
             } else {
-                jsondata[key] = val;  // 기타 필드는 그대로 추가
+                jsondata[key] = val;
             }
         });
-
-        jsondata['captcha'] = grecaptcha.getResponse();  // reCAPTCHA 응답 추가
-        jsondata['usertype'] = 'business';  // 사용자 유형 추가
-
-        console.log('JSON data to be sent:', jsondata);  // 클라이언트에서 전송하는 데이터를 콘솔에 출력
+        jsondata['captcha'] = grecaptcha.getResponse();
+        jsondata['usertype'] = 'business';
 
         try {
             const response = await fetch('/user/business_join', {
@@ -387,26 +391,21 @@
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(jsondata),  // JSON 형식으로 변환하여 전송
-                redirect: 'follow'
+                body: JSON.stringify(jsondata)
             });
 
-            const responseText = await response.text();  // 서버 응답의 원시 텍스트를 가져옴
-            console.log('Response status:', response.status);  // 상태 코드 확인
-            console.log('Response body:', responseText);  // 응답 본문 확인
-
-            if (!response.ok) { // HTTP 상태 코드 확인
+            if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            if (response.redirected) {  // 서버에서 리다이렉트 응답이 있으면 해당 URL로 이동
+            if (response.redirected) {
                 location.href = response.url;
             }
         } catch (error) {
             console.error('Error:', error);
+            alert('비즈니스 가입 처리 중 오류가 발생했습니다.');
         }
     });
-
 
     // 카카오 로그인 함수
     function kakaoLogin() {
@@ -449,7 +448,7 @@
             return;
         }
 
-        businessckbtn.addEventListener('click', async () => {
+        businessckbtn.addEventListener('click', () => {
             const businessNumber = businessNumberInput.value.trim(); // 앞뒤 공백 제거
 
             if (!businessNumber) {
@@ -457,41 +456,24 @@
                 return;
             }
 
-            const data = { b_no: [businessNumber] }; // 수정된 데이터 형식
-            const serviceKey = '9GRdBCxTZtysQpCaJ40ER4FDMLutMxguPCAESTkBW9JTp%2FG3z4Rqd192CzdAFeVauOSyKsBVxXb9PGFBDy5xbw%3D%3D'; // 공공데이터 포털에서 받은 서비스키
-
-            try {
-                const response = await fetch(`https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${serviceKey}`, {
-                    method: 'POST', // 'GET'으로 바꿀 수도 있음
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                });
-
-                if (!response.ok) { // HTTP 상태 코드 확인
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const result = await response.json();
-
-                if (result.valid) {
-                    businessError.textContent = '유효한 사업자 번호입니다.';
-                    businessNumberInput.classList.remove('is-invalid');
-                    businessNumberInput.classList.add('is-valid');
-                } else {
-                    businessError.textContent = '유효하지 않은 사업자 번호입니다.';
-                    businessNumberInput.classList.add('is-invalid');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                businessError.textContent = '서버 요청에 실패했습니다. 다시 시도해주세요.';
+            // 사업자 등록 번호 형식 검증
+            if (validateBusinessNumber(businessNumber)) {
+                businessError.textContent = '유효한 사업자 번호입니다.';
+                businessNumberInput.classList.remove('is-invalid');
+                businessNumberInput.classList.add('is-valid');
+            } else {
+                businessError.textContent = '유효하지 않은 사업자 번호입니다.';
                 businessNumberInput.classList.add('is-invalid');
             }
         });
     });
 
+    // 사업자 등록 번호의 형식 검증 함수
+    function validateBusinessNumber(businessNumber) {
+        // 사업자 등록 번호 형식: 123-45-67890
+        const pattern = /^\d{3}-\d{2}-\d{5}$/;
+        return pattern.test(businessNumber);
+    }
 
 
 </script>

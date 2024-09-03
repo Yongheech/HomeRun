@@ -1,15 +1,18 @@
 from datetime import date
+from typing import Optional
 
 import requests
 from fastapi import Form
 from sqlalchemy import insert, select, and_
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
+import re
+from typing import Dict
 
 from app.model.businessuser import BusinessUser
 from app.model.user import User
-from app.schema.user import NewBusinessUser, NewUser
-from app.service.business_validation import validate_business_number
+from app.schema.user import NewUser
+
 
 
 def get_user_data(
@@ -19,7 +22,9 @@ def get_user_data(
         email: str = Form(...),
         birth: date = Form(...),
         phone: str = Form(...),
-        captcha: str = Form(...)
+        captcha: str = Form(...),
+        business_id: Optional[str] = Form(None),
+        businessno: Optional[str] = Form(None)
 ):
     return NewUser(
         userid=userid,
@@ -28,67 +33,72 @@ def get_user_data(
         email=email,
         birth=birth,
         phone=phone,
-        captcha=captcha
+        captcha=captcha,
+        business_id=business_id,
+        businessno=businessno
     )
 
-def get_business_user_data(
-        business_id: str = Form(...),
-        business_pwd: str = Form(...),
-        business_name: str = Form(...),
-        business_email: str = Form(...),
-        business_phone: str = Form(...),
-        business_birth: date = Form(...),
-        business_uploadno: int = Form(...),
-        captcha: str = Form(...)
-):
-    return NewBusinessUser(
-        business_id=business_id,
-        business_pwd=business_pwd,
-        business_name=business_name,
-        business_email=business_email,
-        business_phone=business_phone,
-        business_birth=business_birth,
-        business_uploadno=business_uploadno,
-        captcha=captcha
-    )
+
 
 class UserService:
     @staticmethod
-    def insert_user(db, user):
+    def insert_user(db: Session, user: NewUser):
         try:
             stmt = insert(User).values(
-                userid=user.userid, passwd=user.passwd,
-                name=user.name, email=user.email,
-                birth=user.birth, phone = user.phone)
-            result = db.execute(stmt)
-            db.flush()
-            db.commit()
-            return result
-
-        except SQLAlchemyError as ex:
-            print(f'▶▶▶ insert_user 오류발생: {str(ex)}')
-            db.rollback()
-
-
-    @staticmethod
-    def insert_business_user(db: Session, business_user: NewBusinessUser):
-        try:
-            stmt = insert(BusinessUser).values(
-                business_id=business_user.business_id,
-                business_pwd=business_user.business_pwd,
-                business_name=business_user.business_name,
-                business_email=business_user.business_email,
-                business_phone=business_user.business_phone,
-                business_birth=business_user.business_birth,
-                business_uploadno=business_user.business_uploadno
+                userid=user.userid,
+                passwd=user.passwd,
+                name=user.name,
+                email=user.email,
+                birth=user.birth,
+                phone=user.phone
             )
             result = db.execute(stmt)
             db.commit()
             return result
         except SQLAlchemyError as ex:
-            print(f'▶▶▶ insert_business_user 오류발생: {str(ex)}')
+            print(f'▶▶▶ insert_user 오류발생: {str(ex)}')
             db.rollback()
 
+    @staticmethod
+    def insert_business_user(db: Session, user: NewUser):
+        try:
+            if not user.business_id or not user.businessno:
+                print("Business ID or Business Number is missing")
+                return None
+
+            # 자체 유효성 검사 수행 (API 대신 직접 검증)
+            if not UserService.is_valid_business_number(user.businessno):
+                print("Invalid business number format")
+                return None
+
+            stmt = insert(BusinessUser).values(
+                business_id=user.business_id,
+                business_pwd=user.passwd,
+                business_name=user.name,
+                business_email=user.email,
+                business_phone=user.phone,
+                business_birth=user.birth,
+                business_uploadno=user.businessno
+            )
+            result = db.execute(stmt)
+            db.commit()
+            return result
+        except SQLAlchemyError as ex:
+            print(f'Error occurred during database operation: {str(ex)}')
+            db.rollback()
+
+
+    @staticmethod
+    def save_user(db: Session, user: NewUser):
+        if user.business_id and user.businessno:
+            result = UserService.insert_business_user(db, user)
+            if result is None:
+                print("Database insert operation failed or no rows affected.")
+        else:
+            result = UserService.insert_user(db, user)
+            if result is None:
+                print("Database insert operation failed or no rows affected.")
+        return result
 
 
     @staticmethod
@@ -134,12 +144,58 @@ class UserService:
             return False
 
 
+
     @staticmethod
-    async def check_business_number(business_number: str) -> bool:
+    def validate_business_number(business_no: str) -> Dict:
+        """
+        Validate the business number format.
+
+        Args:
+            business_no (str): The business number to validate.
+
+        Returns:
+            Dict: A dictionary with validation result.
+        """
+        # 사업자 등록 번호 형식 검증 (10자리 숫자)
+        pattern = re.compile(r'^\d{3}-\d{2}-\d{5}$')
+
+        # 형식에 맞는지 확인
+        if pattern.match(business_no):
+            # 추가적인 검증 로직이 필요할 경우 여기에 추가
+            # 예를 들어, 특정 패턴의 유효성을 추가적으로 검증할 수 있습니다.
+            return {"valid": True}
+        else:
+            return {"valid": False}
+
+
+
+
+    @staticmethod
+    def check_business_number(business_number: str) -> bool:
+        """
+        사업자 등록 번호의 유효성을 확인하는 메서드.
+        자체 검증 로직을 사용하여 API 호출을 하지 않습니다.
+        """
         try:
-            result = await validate_business_number(business_number)
-            # API 결과에 따라 'valid' 키가 존재할 경우 반환
-            return result.get('valid', False)
+            # 사업자 등록 번호 형식 검증
+            is_valid_format = UserService.validate_business_number_format(business_number)
+
+            # 형식이 유효한 경우에는 True를 반환
+            if is_valid_format:
+                return True
+
+            # 형식이 유효하지 않은 경우에는 False를 반환
+            return False
+
         except Exception as ex:
             print(f'▷▷▷ check_business_number 오류 발생 : {str(ex)}')
             return False
+
+
+    @staticmethod
+    def is_valid_business_number(business_number: str) -> bool:
+        # 비즈니스 번호의 형식을 직접 검사하는 함수
+        # 간단한 형식 검증 예시 (길이와 숫자 확인)
+        if len(business_number) == 10 and business_number.isdigit():
+            return True
+        return False

@@ -1,6 +1,7 @@
 from datetime import date
+from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class NewUser(BaseModel):
@@ -11,13 +12,6 @@ class NewUser(BaseModel):
     birth : date
     phone : str
     captcha: str
+    business_id: Optional[str] = Field(None, description="Business ID")
+    businessno: Optional[str] = Field(None, description="Business upload number")
 
-class NewBusinessUser(BaseModel):
-    business_id: str
-    business_pwd: str
-    business_name: str
-    business_email: str
-    business_phone: str
-    business_birth: date
-    business_uploadno: int
-    captcha: str
